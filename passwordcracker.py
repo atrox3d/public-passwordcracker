@@ -2,16 +2,51 @@ import urllib.request
 import sys
 import hashlib
 
+import options
+
 DEFAULT_ALGORYTHM = 'md5'
 
-if len(sys.argv) < 3+1:
-    print(f"syntax {sys.argv[0]} algorythm (default md5) password-file password")
+# if len(sys.argv) < 3+1:
+#     print(f"syntax {sys.argv[0]} algorythm (default md5) password-file password")
+#     exit()
+#
+# algorythm, passwordfile, hashed_password = sys.argv[1:1 + 3]
+#
+# print(algorythm, passwordfile, hashed_password)
+
+parameters = (
+    algorythm,
+    plain_file,
+    hashed_file,
+    plain_password,
+    hashed_password,
+    args,
+) = options.parse_options()
+
+print(
+    algorythm,
+    plain_file,
+    hashed_file,
+    plain_password,
+    hashed_password,
+    args,
+)
+
+if not any(parameters):
+    options.show_help()
     exit()
 
-algorythm, passwordfile, hashed_password = sys.argv[1:1 + 3]
+algorythm = algorythm or DEFAULT_ALGORYTHM
 
-print(algorythm, passwordfile, hashed_password)
+if not any((plain_file, hashed_file)):
+    print("ERROR| please specify a password file")
+    options.show_help()
+    exit()
 
+if not any((plain_password, hashed_password)):
+    print("ERROR| please specify a password ")
+    options.show_help()
+    exit()
 
 if algorythm not in hashlib.algorithms_guaranteed:
     print(f"sorry, algorythm {algorythm} is not available")
@@ -21,6 +56,12 @@ else:
     hasher = getattr(hashlib, algorythm)
     print(f"selected algorythm: {algorythm}: {hasher}")
 
+print(f"{algorythm=}")
+print(f"{plain_file=}")
+print(f"{hashed_file=}")
+print(f"{plain_password=}")
+print(f"{hashed_password=}")
+exit()
 
 # try:
 #     file = open(passwordfile)

@@ -8,8 +8,8 @@ def show_help():
         f"syntax: {sys.argv[0]}\n"
         f"[-h]                     : display help and exit\n"
         f"[-a algorythm]           : algorythm (default md5)\n"
-        f"[-f path or url plain]   : plain passwords file path or url"
-        f"[-F path or url hashed]  : hashed passwords file path or url"
+        f"[-f path or url plain]   : plain passwords file path or url\n"
+        f"[-F path or url hashed]  : hashed passwords file path or url\n"
         f"[-p plain password]      : plain password to crack\n"
         f"[-P hashed password]     : hashed password to crack\n"
     )
@@ -46,7 +46,7 @@ def parse_options():
             hashed_file = arg
             print(f"GETOPT| hashed password file: {hashed_file}")
         elif opt in ['-p']:
-            plain_file = arg
+            plain_password = arg
             print(f"GETOPT| plain password : {plain_password}")
         elif opt in ['-P']:
             hashed_password = arg
