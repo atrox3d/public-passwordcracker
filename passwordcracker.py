@@ -61,7 +61,6 @@ print(f"{plain_file=}")
 print(f"{hashed_file=}")
 print(f"{plain_password=}")
 print(f"{hashed_password=}")
-exit()
 
 # try:
 #     file = open(passwordfile)
@@ -69,6 +68,7 @@ exit()
 # except:
 #     print(file"the file {passwordfile} does not exist, exiting.")
 #     exit()
+passwordfile = plain_file or hashed_file
 try:
     file = urllib.request.urlopen(passwordfile)
     print(f"urllib: {passwordfile} is open")
@@ -81,6 +81,9 @@ except:
         print(f"cannot open {passwordfile}")
         exit()
 
+exit()
+
+
 print(f"password to crack: {hashed_password}")
 
 print("START")
@@ -91,9 +94,31 @@ for line in file:
     except:
         line = line.strip().strip('\r').strip('\n')
         pass
-    hashed_line = hasher(line.encode()).hexdigest()
-    if hashed_password == hashed_line:
-        print(f"{hashed_password} - {hashed_line} : OK: {line}")
-        exit()
-    else:
-        print(f"{hashed_password} - {hashed_line} : KO ({line})")
+
+    if plain_file and hashed_password:
+        hashed_line = hasher(line.encode()).hexdigest()
+
+        if hashed_password == hashed_line:
+            print(f"{hashed_password} - {hashed_line} : OK: {line}")
+            exit()
+        else:
+            print(f"{hashed_password} - {hashed_line} : KO ({line})")
+    elif plain_file and plain_password:
+        if line == plain_password:
+            print(f"{plain_password} - {line} : OK: {line}")
+            exit()
+        else:
+            print(f"{plain_password} - {line} : KO ({line})")
+    elif hashed_file and plain_password:
+        hashed_password = hasher(plain_password.encode()).hexdigest()
+        if hashed_password == line:
+            print(f"{hashed_password} - {line} : OK: {line}")
+            exit()
+        else:
+            print(f"{hashed_password} - {line} : KO ({line})")
+    elif hashed_file and hashed_password:
+        if hashed_password == line:
+            print(f"{hashed_password} - {line} : OK: {line}")
+            exit()
+        else:
+            print(f"{hashed_password} - {line} : KO ({line})")
