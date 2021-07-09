@@ -1,0 +1,3 @@
+packaging==21.0
+pyparsing==2.4.7
+wireless==0.3.3
