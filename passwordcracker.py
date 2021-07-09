@@ -70,6 +70,7 @@ print(f"{hashed_password=}")
 #     exit()
 passwordfile = plain_file or hashed_file
 try:
+    #  https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/xato-net-10-million-passwords.txt
     file = urllib.request.urlopen(passwordfile)
     print(f"urllib: {passwordfile} is open")
 except:
