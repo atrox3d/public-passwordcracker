@@ -81,44 +81,34 @@ except:
         print(f"cannot open {passwordfile}")
         exit()
 
-exit()
-
-
-print(f"password to crack: {hashed_password}")
+print(f"password to crack: {hashed_password or plain_password}")
 
 print("START")
 # for line in file.readlines():
 for line in file:
     try:
+        # url
         line = line.decode('utf-8').strip().strip('\r').strip('\n')
     except:
+        # file
         line = line.strip().strip('\r').strip('\n')
         pass
 
     if plain_file and hashed_password:
-        hashed_line = hasher(line.encode()).hexdigest()
-
-        if hashed_password == hashed_line:
-            print(f"{hashed_password} - {hashed_line} : OK: {line}")
-            exit()
-        else:
-            print(f"{hashed_password} - {hashed_line} : KO ({line})")
+        line = hasher(line.encode()).hexdigest()
+        password = hashed_password
     elif plain_file and plain_password:
-        if line == plain_password:
-            print(f"{plain_password} - {line} : OK: {line}")
-            exit()
-        else:
-            print(f"{plain_password} - {line} : KO ({line})")
+        password = plain_password
+        # line = line
     elif hashed_file and plain_password:
-        hashed_password = hasher(plain_password.encode()).hexdigest()
-        if hashed_password == line:
-            print(f"{hashed_password} - {line} : OK: {line}")
-            exit()
-        else:
-            print(f"{hashed_password} - {line} : KO ({line})")
+        password = hasher(plain_password.encode()).hexdigest()
+        # line = line
     elif hashed_file and hashed_password:
-        if hashed_password == line:
-            print(f"{hashed_password} - {line} : OK: {line}")
-            exit()
-        else:
-            print(f"{hashed_password} - {line} : KO ({line})")
+        password = hashed_password
+        # line = line
+
+    if password == line:
+        print(f"{password} - {line} : OK: {line}")
+        exit()
+    else:
+        print(f"{password} - {line} : KO ({line})")
