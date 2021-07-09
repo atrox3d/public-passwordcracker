@@ -1,3 +1,4 @@
+import urllib.request
 import sys
 import hashlib
 
@@ -21,20 +22,37 @@ else:
     print(f"selected algorythm: {algorythm}: {hasher}")
 
 
+# try:
+#     file = open(passwordfile)
+#     print(file"file {passwordfile} is open for input")
+# except:
+#     print(file"the file {passwordfile} does not exist, exiting.")
+#     exit()
 try:
-    file = open(passwordfile)
-    print(f"file {passwordfile} is open for input")
+    file = urllib.request.urlopen(passwordfile)
+    print(f"urllib: {passwordfile} is open")
 except:
-    print(f"the file {passwordfile} does not exist, exiting.")
-    exit()
+    print(f"urllib cannot open {passwordfile}")
+    try:
+        file = open(passwordfile)
+        print(f"open: {passwordfile} is open")
+    except:
+        print(f"cannot open {passwordfile}")
+        exit()
 
 print(f"password to crack: {hashed_password}")
 
 print("START")
-for line in file.readlines():
-    hashed_line = hasher(line.strip().encode()).hexdigest()
+# for line in file.readlines():
+for line in file:
+    try:
+        line = line.decode('utf-8').strip().strip('\r').strip('\n')
+    except:
+        line = line.strip().strip('\r').strip('\n')
+        pass
+    hashed_line = hasher(line.encode()).hexdigest()
     if hashed_password == hashed_line:
-        print(f"{hashed_password} - {hashed_line} : OK: {line.strip()}")
+        print(f"{hashed_password} - {hashed_line} : OK: {line}")
+        exit()
     else:
-        print(f"{hashed_password} - {hashed_line} : KO")
-
+        print(f"{hashed_password} - {hashed_line} : KO ({line})")
