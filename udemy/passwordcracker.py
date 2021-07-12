@@ -1,5 +1,4 @@
 import urllib.request
-import sys
 import hashlib
 
 import options
