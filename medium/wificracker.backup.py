@@ -1,3 +1,6 @@
+# https://medium.com/analytics-vidhya/wifi-hacking-using-pywifi-4f90ed9b1a2
+# https://www.codeproject.com/Tips/5255355/How-to-Put-Color-on-Windows-Console
+# https://pypi.org/project/colorama/
 ###############################################################################################################
 
 # Github Repo For Hacking Stuff --> https://github.com/r-sajal/Ethical-Hacking/
