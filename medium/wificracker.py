@@ -46,7 +46,7 @@ logging.basicConfig(
 
 # type = False
 
-def crack_password(ssid, password, number):
+def crack_password(ssid, password, number, verbose=False):
     profile = Profile()  # create profile instance
     profile.ssid = ssid  # name of client
     profile.auth = const.AUTH_ALG_OPEN  # auth algo
@@ -64,9 +64,10 @@ def crack_password(ssid, password, number):
     print(PLUS, "creating profile:")
     tmp_profile = wifi.iface.add_network_profile(profile)  # add new profile
 
-    print(DARK_GREEN)
-    for var in vars(tmp_profile):
-        print(f"{var:15}: {getattr(tmp_profile, var)}")
+    if verbose:
+        print(DARK_GREEN)
+        for var in vars(tmp_profile):
+            print(f"{var:15}: {getattr(tmp_profile, var)}")
 
     time.sleep(1)  # if script not working change time to 1 !!!!!!
     print(GREEN)
@@ -86,7 +87,7 @@ def crack_password(ssid, password, number):
 
 
 # opening and reading the file
-def crack_loop(ssid, file):
+def crack_loop(ssid, file, verbose=False):
     print(YELLOW)
     print(TILDE, "Cracking...")
     number = 0
@@ -97,7 +98,7 @@ def crack_loop(ssid, file):
             pwd = line[0]
             print(GREEN)
             print(f"[{number}] Trying {ssid} with {pwd}")
-            crack_password(ssid, pwd, number)
+            crack_password(ssid, pwd, number, verbose=False)
 
 
 def menu(client_ssid, path_to_file):
@@ -109,6 +110,7 @@ def menu(client_ssid, path_to_file):
 
     ssid = args.ssid
     filee = args.file
+    verbose = args.verbose
 
     # breaking
     if os.path.exists(filee):
@@ -119,7 +121,7 @@ def menu(client_ssid, path_to_file):
         #         os.system("clear")
         print(CYAN, PLUS, f"ssid: {ssid}")
         print(CYAN, PLUS, f"file: {filee}", RESET)
-        return ssid, filee
+        return ssid, filee, verbose
     else:
         print(LIGHT_RED, MINUS, f"No Such File: {filee}, terminating", RESET)
         exit()
@@ -127,9 +129,9 @@ def menu(client_ssid, path_to_file):
 
 if __name__ == '__main__':
     # Main function call
-    ssid, filee = menu(client_ssid="", path_to_file="")
-    wifi = helpers.wifi.Wifi()
-    crack_loop(ssid, filee)
+    ssid, filee, verbose = menu(client_ssid="", path_to_file="")
+    wifi = helpers.wifi.Wifi(verbose)
+    crack_loop(ssid, filee, verbose)
 
 ###########################################################################################################################################################
 # END OF FILE

@@ -7,7 +7,8 @@ from .constants import *
 
 class Wifi:
     # def initwifi():
-    def __init__(self):
+    def __init__(self, verbose=False):
+        self.verbose = verbose
         self.wifi = None
         self.ifaces = []
         self.ifaces_count = 0

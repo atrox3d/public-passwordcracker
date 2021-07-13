@@ -21,5 +21,15 @@ def get_argument_parser():
         help='keywords list ...',
         required=True
     )
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        # metavar='',
+        # type=str,
+        default=False,
+        action='store_true',
+        help='verbose',
+        required=False
+    )
     print()
     return parser
