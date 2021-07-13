@@ -16,7 +16,7 @@ from pywifi import Profile
 
 import colorama
 
-from helpers.parser import get_argument_parser, get_filehandle
+from helpers.argparser import get_argument_parser, get_filehandle
 
 colorama.init()
 
