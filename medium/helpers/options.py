@@ -16,11 +16,11 @@ def show_help():
 
 
 class Options:
-    # def __init__(self, options):
-    #     for option in options:
-    #         if option != ":":
-    #             setattr(self, option, None)
-    pass
+    def __init__(self, options):
+        for option in options:
+            if option != ":":
+                setattr(self, option, None)
+    # pass
 
 
 def parse_options(options: str, helpopts='hH', helpfn=show_help, arguments=sys.argv[1:]):
@@ -35,8 +35,8 @@ def parse_options(options: str, helpopts='hH', helpfn=show_help, arguments=sys.a
         print(repr(goe))
         exit(1)
 
-    parsed = Options()
-    print(parsed.__dict__)
+    parsed = Options(options)
+    # print(parsed.__dict__)
 
     for opt, arg in opts:
         if opt in [f"-{h}" for h in helpopts]:
@@ -45,7 +45,7 @@ def parse_options(options: str, helpopts='hH', helpfn=show_help, arguments=sys.a
         else:
             setattr(parsed, opt[1:], arg if arg else None)
 
-    print(parsed.__dict__)
+    # print(parsed.__dict__)
     return parsed
 
 
