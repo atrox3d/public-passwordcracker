@@ -11,7 +11,7 @@ def get_argument_parser():
         metavar='',
         type=str,
         help='SSID = WIFI Name..',
-        required=True
+        # required=True
     )
     parser.add_argument(
         '-f',
@@ -24,11 +24,17 @@ def get_argument_parser():
     parser.add_argument(
         '-v',
         '--verbose',
-        # metavar='',
-        # type=str,
         default=False,
         action='store_true',
         help='verbose',
+        required=False
+    )
+    parser.add_argument(
+        '-a',
+        '--all',
+        default=False,
+        action='store_true',
+        help='loop throug all available networks',
         required=False
     )
     print()
