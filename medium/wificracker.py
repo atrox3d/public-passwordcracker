@@ -9,12 +9,16 @@ import argparse
 import sys, os, os.path, platform
 import re
 import time
+import logging
 
 # Importing pywifi library
 import pywifi
 from pywifi import PyWiFi
 from pywifi import const
 from pywifi import Profile
+
+from colorama import init
+init()
 
 # Change According to needs -->
 # cient_ssid == name of the wifi which you want to hack
@@ -24,15 +28,16 @@ from pywifi import Profile
 # path_to_file = "data/wifi-passwords.txt"
 # path_to_file = "data/passwords.txt"
 
-#######
-import logging
-logging.basicConfig(
-    level=logging.NOTSET,
-    force=True,
-    format="%(levelname)s | %(message)s",
-    stream=sys.stdout
-)
-logging.getLogger('pywifi').setLevel(logging.NOTSET)
+################################################################################
+
+# noinspection PyArgumentList
+# logging.basicConfig(
+#     level=logging.NOTSET,
+#     format="%(levelname)s | %(message)s",
+#     stream=sys.stdout,
+#     force=True,
+# )
+# logging.getLogger('pywifi').setLevel(logging.NOTSET)
 
 # Setting the color combinations
 RED = "\033[1;31m"
@@ -44,12 +49,14 @@ BOLD = "\033[;1m"
 REVERSE = "\033[;7m"
 
 try:
-    print("[+] Init PyWifi:")
+    print("[+] Initializing PyWifi:")
     # Interface information
     wifi = PyWiFi()
     ifaces = wifi.interfaces()[0]  # for wifi we use index - 0
+    exit(0)
 
     ifaces.scan()  # check the card
+    time.sleep(2)
     results = ifaces.scan_results()  # Obtain the results of the previous triggerred scan. A Profile list will be returned.
     for result in results:
         print(result.ssid)
@@ -70,7 +77,7 @@ except Exception as e:
     exit()
 
 type = False
-# exit()
+exit()
 
 def main(ssid, password, number):
     profile = Profile()  # create profile instance
