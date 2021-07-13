@@ -82,7 +82,7 @@ except:
         exit()
 
 print(f"password to crack: {hashed_password or plain_password}")
-
+# exit()
 print("START")
 # for line in file.readlines():
 for line in file:

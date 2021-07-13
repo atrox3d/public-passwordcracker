@@ -16,7 +16,7 @@ from pywifi import Profile
 
 import colorama
 
-from helpers.parser import get_argument_parser
+from helpers.parser import get_argument_parser, get_filehandle
 
 colorama.init()
 
@@ -82,7 +82,7 @@ def crack_password(ssid, password, number, verbose=False):
         print(BOLD, GREEN, '[*] password is ' + password, RESET)
         wifi.iface.disconnect()
         time.sleep(1)
-        # exit()
+        exit()
     else:
         print(LIGHT_RED, '[{}] Crack Failed using {}'.format(number, password))
 
@@ -101,14 +101,23 @@ def crack_loop(ssid, file, verbose=False):
         # ssid = network.ssid
 
         number = 0
-        with open(file, 'r', encoding='utf8') as words:
-            for line in words:
-                number += 1
-                # line = line.split("\n")
-                pwd = line.strip('\r').strip('\n').strip()
-                print(YELLOW)
-                print(f"[{number}] Trying {ssid} with {pwd}")
-                crack_password(ssid, pwd, number, verbose=False)
+        # with open(file, 'r', encoding='utf8') as words:
+        words = get_filehandle(file)
+        for line in words:
+            number += 1
+            # line = line.split("\n")
+            # pwd = line.strip('\r').strip('\n').strip()
+            try:
+                # url
+                pwd = line.decode('utf-8').strip().strip('\r').strip('\n')
+            except:
+                # file
+                pwd = line.strip().strip('\r').strip('\n')
+                pass
+            print(YELLOW)
+            print(f"[{number}] Trying {ssid} with {pwd}")
+            crack_password(ssid, pwd, number, verbose=False)
+        words.close()
 
 
 def menu():
@@ -130,18 +139,21 @@ def menu():
         print(YELLOW, PLUS, "setting lopp for all networks")
         ssid = "*ALL*"
     # breaking
-    if os.path.exists(filee):
-        # pass
-        #     if platform.system().startswith("Win" or "win"):
-        #         os.system("cls")
-        #     else:
-        #         os.system("clear")
-        print(CYAN, PLUS, f"ssid: {ssid}")
-        print(CYAN, PLUS, f"file: {filee}", RESET)
+    if filee.startswith("http:") or filee.startswith("https:"):
         return ssid, filee, verbose
     else:
-        print(LIGHT_RED, MINUS, f"No Such File: {filee}, terminating", RESET)
-        exit()
+        if os.path.exists(filee):
+            # pass
+            #     if platform.system().startswith("Win" or "win"):
+            #         os.system("cls")
+            #     else:
+            #         os.system("clear")
+            print(CYAN, PLUS, f"ssid: {ssid}")
+            print(CYAN, PLUS, f"file: {filee}", RESET)
+            return ssid, filee, verbose
+        else:
+            print(LIGHT_RED, MINUS, f"No Such File: {filee}, terminating", RESET)
+            exit()
 
 
 if __name__ == '__main__':
