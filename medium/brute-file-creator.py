@@ -21,15 +21,26 @@ def password_wordlist(start_range=8, end_range=10, file_name="brute.txt"):
     # attempts counter
     attempts = 0
     # open file
-    f = open(file_name, 'a')
+    f = open(file_name, 'w')
 
     for password_length in range(start_range, end_range):
+        print(f"{password_length = }")
+        # input()
+        buffer = []
+        max_buffer = 1000000
         for guess in itertools.product(chars, repeat=password_length):
             attempts += 1
             guess = ''.join(guess)
-            f.write(guess)  # write in file
-            f.write("\n")
+            # f.write(guess)  # write in file
+            # f.write("\n")
+            buffer.append(guess)
             print(f"{guess:{end_range+1}}: {attempts:20,}")
+            if not attempts % max_buffer:
+                print("-------------------------------------------write buffer")
+                # input()
+                f.write('\n'.join(buffer) + '\n')
+                buffer = []
+                print("-------------------------------------------reset buffer")
 
     # close file
     f.close()
