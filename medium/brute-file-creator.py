@@ -29,7 +29,7 @@ def password_wordlist(start_range=8, end_range=10, file_name="brute.txt"):
             guess = ''.join(guess)
             f.write(guess)  # write in file
             f.write("\n")
-            print(guess, attempts)
+            print(f"{guess:{end_range+1}}: {attempts:20,}")
 
     # close file
     f.close()
@@ -40,28 +40,39 @@ def show_help():
 
 
 if __name__ == '__main__':
-    opts = options.parse_options("hs:e:f:", helpfn=show_help)
+    #
+    #   parse command line options
+    #
+    opts = options.parse_options("hs:e:f:", help_function=show_help)
+    #
+    #   check mandatory arguments
+    #
+    if not all((opts.s, opts.e, opts.f)):
+        show_help()
+        exit()
+    #
+    #   init variables
+    #
     start_range = int(opts.s)
     end_range = int(opts.e)
     file_name = opts.f
-    if not all((start_range, end_range, file_name)):
-        show_help()
-        exit()
+    start_time = time.time()
+    start_timef = time.strftime("%Y%m%d-%H:%M:%S", time.localtime(start_time))
+    print(f"{start_range = }")
+    print(f"{end_range   = }")
+    print(f"{file_name   = }")
+    print(f"{start_timef = }")
+    # Main function Call
+    password_wordlist(start_range, end_range, file_name)
 
-    print(start_range, end_range, file_name)
+    end_time = time.time()
+    end_timef = time.strftime("%Y%m%d-%H:%M:%S", time.localtime(end_time))
+    timediff = end_time - start_time
+    print(f"{start_range = }")
+    print(f"{end_range   = }")
+    print(f"{file_name   = }")
+    print(f"{end_timef   = }")
+    print(f"{timediff    = }")
 
 
-# exit()
-# start_range = 8
-# end_range = 10
-# file_name = "brute_password_list.txt"
-
-start_time = time.time()
-# Main function Call
-password_wordlist(start_range, end_range, file_name)
-
-end_time = time.time()
-
-print(end_time - start_time)  # print the total time for operation
-
-##### Code by Sajal Rastogi
+    ##### Code by Sajal Rastogi
