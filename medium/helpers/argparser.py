@@ -1,7 +1,5 @@
 import argparse
-import urllib.request
 
-from .constants import *
 
 def get_argument_parser():
     # Argument Parser for making cmd interative
@@ -43,19 +41,3 @@ def get_argument_parser():
     return parser
 
 
-def get_filehandle(path):
-    print(DARK_GREEN)
-    try:
-        #  https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/xato-net-10-million-passwords.txt
-        file = urllib.request.urlopen(path)
-        print(f"urllib: {path} is open")
-    except:
-        print(f"urllib cannot open {path}")
-        try:
-            file = open(path, 'r', encoding='utf8')
-            print(f"open: {path} is open")
-        except:
-            print(RED)
-            print(f"cannot open {path}")
-            exit()
-    return file
