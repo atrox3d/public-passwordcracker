@@ -17,7 +17,7 @@ from pywifi import Profile
 import colorama
 
 from helpers.argparser import get_argument_parser
-from medium.helpers.abstractfile import get_filehandle
+from helpers.abstractfile import get_filehandle
 
 colorama.init()
 
@@ -89,19 +89,27 @@ def crack_password(ssid, password, number, verbose=False):
         print(LIGHT_RED, '[{}] Crack Failed using {}'.format(number, password))
         return False
 
+
 # opening and reading the file
 def crack_loop(ssid, file, verbose=False):
+
+    wifi = helpers.wifi.Wifi(verbose)
+
     print(YELLOW)
     print(TILDE, "Cracking...")
 
+    print(GREEN)
+    print("setting target ssid to: ", end="")
     if ssid == "*ALL*":
         ssids = [network.ssid for network in wifi.networks]
     else:
         ssids = [ssid]
-
+    print(ssids)
+    exit()
     number = 0
     # with open(file, 'r', encoding='utf8') as words:
     words = get_filehandle(file)
+
     for line in words:
         number += 1
         # line = line.split("\n")
@@ -127,7 +135,7 @@ def crack_loop(ssid, file, verbose=False):
     words.close()
 
 
-def menu():
+def check_params():
     parser = get_argument_parser()
     args = parser.parse_args()
 
@@ -143,30 +151,18 @@ def menu():
         print(RED, MINUS, "one of ssid/all must be specified")
         exit()
     else:
-        print(YELLOW, PLUS, "setting lopp for all networks")
+        print(YELLOW, PLUS, "setting loop for all networks")
         ssid = "*ALL*"
-    # breaking
-    if filee.startswith("http:") or filee.startswith("https:"):
-        return ssid, filee, verbose
-    else:
-        if os.path.exists(filee):
-            # pass
-            #     if platform.system().startswith("Win" or "win"):
-            #         os.system("cls")
-            #     else:
-            #         os.system("clear")
-            print(CYAN, PLUS, f"ssid: {ssid}")
-            print(CYAN, PLUS, f"file: {filee}", RESET)
-            return ssid, filee, verbose
-        else:
-            print(LIGHT_RED, MINUS, f"No Such File: {filee}, terminating", RESET)
-            exit()
+
+    print(CYAN, PLUS, f"ssid: {ssid}")
+    print(CYAN, PLUS, f"file: {filee}", RESET)
+    return ssid, filee, verbose
 
 
 if __name__ == '__main__':
     # Main function call
-    ssid, filee, verbose = menu()
-    wifi = helpers.wifi.Wifi(verbose)
+    ssid, filee, verbose = check_params()
+    # wifi = helpers.wifi.Wifi(verbose)
     crack_loop(ssid, filee, verbose)
 
 ###########################################################################################################################################################

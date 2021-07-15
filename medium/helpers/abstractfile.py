@@ -3,8 +3,8 @@ import sys
 import urllib.request
 import logging
 
-from constants import *
-from sshfile import parse_ssh, ssh_file, Action
+from .constants import *
+from .sshfile import parse_ssh, ssh_file, Action
 
 logger = logging.getLogger(__name__)
 
