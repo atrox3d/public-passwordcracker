@@ -14,11 +14,20 @@ def get_argument_parser():
         # required=True
     )
     parser.add_argument(
-        '-f',
-        '--file',
+        '-p',
+        '--password-file',
         metavar='',
         type=str,
         help='keywords list ...',
+        required=True
+    )
+    parser.add_argument(
+        '-o',
+        '--output-file',
+        metavar='',
+        type=str,
+        help='output cracked wifis ...',
+        default="cracked.txt",
         required=True
     )
     parser.add_argument(
