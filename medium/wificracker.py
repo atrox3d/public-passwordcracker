@@ -63,7 +63,7 @@ def create_profile(
     return profile
 
 
-def reset_profiles(wifi, number):
+def reset_profiles(wifi, number, verbose):
     if verbose:
         print(DARK_GREEN)
         print(PLUS, f"[{number}] total network profiles: ", len(wifi.iface.network_profiles()))
