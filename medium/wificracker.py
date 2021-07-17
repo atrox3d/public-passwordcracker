@@ -105,7 +105,14 @@ def crack_password(wifi, ssid, password, number, verbose=False):
     if wifi.iface.status() == const.IFACE_CONNECTED:  # checker
         # sucess
         # time.sleep(1)
-        print(BOLD, GREEN, '[*] Crack success!', RESET)
+        print(BOLD, GREEN)
+        print("*" * 80)
+        print(f"*{'':^78}*")
+        print(f"*{'':^78}*")
+        print(f"*{'Crack success!':^78}*")
+        print(f"*{'':^78}*")
+        print(f"*{'':^78}*")
+        print("*" * 80)
         print(BOLD, GREEN, '[*] password is ' + password, RESET)
         wifi.iface.disconnect()
         time.sleep(1)
