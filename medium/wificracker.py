@@ -89,7 +89,7 @@ def dump_profile(profile):
 
 def crack_password(wifi, ssid, password, number, verbose=False):
     # profile management
-    profile = create_profile(password, ssid)
+    profile = create_profile(ssid, password)
     reset_profiles(wifi, number, verbose)
     tmp_profile = add_profile(wifi, number, profile)
     if verbose:
