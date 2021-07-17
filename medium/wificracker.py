@@ -158,7 +158,7 @@ def crack_loop(ssid, password_file, output_file, from_password, to_password, ver
             print(YELLOW)
             print(f"[{attempts}] Trying {ssid} with {pwd}")
             # try to crack
-            if crack_password(wifi, ssid, pwd, attempts, verbose=False):
+            if crack_password(wifi, ssid, pwd, attempts, verbose):
                 # save cracked data
                 print(DARK_WHITE, f"saving {ssid}:{pwd} to {output_file}")
                 with open(output_file, 'a') as out:
