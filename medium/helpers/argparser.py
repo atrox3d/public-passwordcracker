@@ -1,4 +1,7 @@
 import argparse
+import string
+
+# from _cffi_backend import string
 
 
 def get_argument_parser():
@@ -6,7 +9,7 @@ def get_argument_parser():
     parser = argparse.ArgumentParser(description='arg parser')
     # adding arguments
     parser.add_argument(
-        '-a',
+        '-all',
         '--all',
         default=False,
         action='store_true',
@@ -14,7 +17,7 @@ def get_argument_parser():
         required=False
     )
     parser.add_argument(
-        '-s',
+        '-ssid',
         '--ssid',
         metavar='',
         type=str,
@@ -22,24 +25,42 @@ def get_argument_parser():
         # required=True
     )
     parser.add_argument(
-        '-p',
-        '--password-file',
+        '-passwordfile',
+        '--passwordfile',
         metavar='',
         type=str,
         help='keywords list ...',
         required=True
     )
     parser.add_argument(
-        '-o',
-        '--output-file',
+        '-frompassword',
+        '--frompassword',
+        default="",
+        metavar='',
+        type=str,
+        help='begin from password',
+        required=False
+    )
+    parser.add_argument(
+        '-topassword',
+        '--topassword',
+        default=max(string.ascii_letters + string.digits + string.punctuation + string.whitespace) * 100,
+        metavar='',
+        type=str,
+        help='end with password',
+        required=False
+    )
+    parser.add_argument(
+        '-outputfile',
+        '--outputfile',
         metavar='',
         type=str,
         help='output cracked wifis ...',
         default="cracked.txt",
-        required=True
+        required=False
     )
     parser.add_argument(
-        '-v',
+        '-verbose',
         '--verbose',
         default=False,
         action='store_true',

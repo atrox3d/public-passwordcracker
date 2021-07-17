@@ -117,7 +117,7 @@ def crack_password(wifi, ssid, password, number, verbose=False):
 
 
 # opening and reading the file
-def crack_loop(ssid, password_file, output_file, verbose=False):
+def crack_loop(ssid, password_file, output_file, from_password, to_password, verbose):
     wifi = helpers.wifi.Wifi(verbose)
 
     print(YELLOW)
@@ -134,8 +134,6 @@ def crack_loop(ssid, password_file, output_file, verbose=False):
     attempts = 0
     words = get_filehandle(password_file)
     for line in words:
-        #   count attempts
-        attempts += 1
         #   get next password
         try:
             # url / ssh
@@ -143,6 +141,18 @@ def crack_loop(ssid, password_file, output_file, verbose=False):
         except:
             # file
             pwd = line.strip().strip('\r').strip('\n')
+
+        if pwd < from_password:
+            print(f"{pwd} < {from_password}: skipping")
+            continue
+
+        if pwd > to_password:
+            print(f"{pwd} > {to_password}: terminating")
+            exit()
+
+        #   count attempts
+        attempts += 1
+
         # loop over ssids
         for ssid in ssids:
             print(YELLOW)
@@ -163,11 +173,13 @@ def check_params():
     parser = get_argument_parser()
     args = parser.parse_args()
 
-    ssid = args.ssid
-    password_file = args.password_file
-    output_file = args.output_file
-    verbose = args.verbose
     all = args.all
+    ssid = args.ssid
+    password_file = args.passwordfile
+    output_file = args.outputfile
+    from_password = args.frompassword
+    to_password = args.topassword
+    verbose = args.verbose
     #
     #   one ssid or -a must be specified
     #
@@ -182,16 +194,18 @@ def check_params():
     print(CYAN, PLUS, f"ssid         : {ssid}")
     print(CYAN, PLUS, f"password file: {password_file}")
     print(CYAN, PLUS, f"output_file  : {output_file}")
+    print(CYAN, PLUS, f"from_password: {from_password}")
+    print(CYAN, PLUS, f"to_password  : {to_password}")
     print(CYAN, PLUS, f"verbose      : {verbose}")
     print(RESET)
     time.sleep(1.5)
-    return ssid, password_file, output_file, verbose
+    return ssid, password_file, output_file, from_password, to_password, verbose
 
 
 if __name__ == '__main__':
     # Main function call
-    ssid, password_file, output_file, verbose = check_params()
-    crack_loop(ssid, password_file, output_file, verbose)
+    ssid, password_file, output_file, from_password, to_password, verbose = check_params()
+    crack_loop(ssid, password_file, output_file, from_password, to_password, verbose)
 
 ###########################################################################################################################################################
 # END OF FILE
