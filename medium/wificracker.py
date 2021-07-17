@@ -182,6 +182,7 @@ def check_params():
     print(CYAN, PLUS, f"ssid         : {ssid}")
     print(CYAN, PLUS, f"password file: {password_file}")
     print(CYAN, PLUS, f"output_file  : {output_file}")
+    print(CYAN, PLUS, f"verbose      : {verbose}")
     print(RESET)
     time.sleep(1.5)
     return ssid, password_file, output_file, verbose

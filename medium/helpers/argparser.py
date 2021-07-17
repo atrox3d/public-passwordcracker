@@ -6,6 +6,14 @@ def get_argument_parser():
     parser = argparse.ArgumentParser(description='arg parser')
     # adding arguments
     parser.add_argument(
+        '-a',
+        '--all',
+        default=False,
+        action='store_true',
+        help='loop throug all available networks',
+        required=False
+    )
+    parser.add_argument(
         '-s',
         '--ssid',
         metavar='',
@@ -36,14 +44,6 @@ def get_argument_parser():
         default=False,
         action='store_true',
         help='verbose',
-        required=False
-    )
-    parser.add_argument(
-        '-a',
-        '--all',
-        default=False,
-        action='store_true',
-        help='loop throug all available networks',
         required=False
     )
     print()
